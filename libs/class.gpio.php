@@ -44,20 +44,10 @@ class GPIO extends DB
 		
 	public function write($gpio, $value)
 	{
-		$rs = $this->read($gpio);	
-		if( $value != $rs['value'] )
-		{
-			//has change, write command
-			$this->cmd($gpio, 'value', $value);
-			return TRUE;
-		}	
-		else
-		{
-			return FALSE;
-		}
+		$this->cmd($gpio, 'write', $value);
 	}
 	
-	public function cmd($gpio,$field,$value)
+	protected function cmd($gpio,$field,$value)
 	{
 		$stmt = $this->db->prepare("INSERT INTO `"._GPIO_COMMAND."` 
 								(`id`, `gpio`, `field`, `value`, `created_at`) 

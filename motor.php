@@ -5,10 +5,18 @@ $gpio = new GPIO();
 if( isset($_GET['s']) && $_GET['s']=='1')
 {
 	$g17 = $gpio->read(17);
-	echo $g17['mode'].'='.$g17['value'];
+	echo $g17['value'];
 	exit;
 }
-$gpio->mode(17, 'OUT');
+
+if( isset($_POST['v']) )
+{
+	$gpio->mode(17, 'OUT');
+	$gpio->write(17, $_POST['v']);
+	echo $_POST['v'];
+	exit;
+}
+
 
 //$gpio->cmd(17,1,1);
 ?>
@@ -38,7 +46,7 @@ $gpio->mode(17, 'OUT');
 
       <!-- Main jumbotron for a primary marketing message or call to action -->
       <div class="jumbotron">
-        <h1 class=" text-center">Motor is <span id="gpio17"></span></h1>
+        <h1 class=" text-center">Send=<span id="startstop"></span> | Response=<span id="gpio17"></span></h1>
         <p><a href="#" class="btn btn-danger btn-lg" role="button" id="btnStop">STOP</a> <a href="#" class="btn btn-success btn-lg pull-right" role="button" id="btnStart">START</a></p>
       </div>
 	</div>
@@ -49,13 +57,18 @@ $gpio->mode(17, 'OUT');
 	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <script language="javascript" type="text/javascript">
 $(function(){ 
+	aoStart();
 	
 	$("#btnStart").click(function() { 
-		aoStart();	
+		setmotor('1');
+		//aoStart();		
+		
 	});
 	
 	$("#btnStop").click(function() { 
-		aoStop();	
+		setmotor('0');
+		//aoStop();
+		
 	});	
 
 });
@@ -76,6 +89,19 @@ function aoStop(){
     try{
         clearInterval(refreshcon);
     }catch(err){}
+}
+
+function setmotor( s )
+{
+		$.ajax({
+		  type: "POST",
+		  url: "<?php echo $_SERVER['PHP_SELF']; ?>",
+		  data: { v: s }
+		})
+		  .done(function( msg ) {
+			$('#startstop').html(msg);
+			//alert( msg );
+		 });	
 }
 </script>
 	
