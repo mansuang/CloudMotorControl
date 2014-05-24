@@ -36,11 +36,10 @@ updated_at=:updated_at");
 	//$stmt->bindParam(':updated_at', $updated_at);
 
 
-	$rows = explode("|",$_POST['v']);
+	$rows = json_decode($_POST['v']);
 	$data = array();
-	foreach($rows as $row)
+	foreach($rows as $arr)
 	{
-		$arr = explode("_",$row);
 		$gpio = $arr[0];
 		$mode = $arr[1];
 		$value = $arr[2];
@@ -53,7 +52,10 @@ updated_at=:updated_at");
 		}
 		$data[$arr[2]] = $arr;		
 	}
-	print_r($data);
+	
+	$stmt = $dbh->db->query("SELECT id,gpio,field,value FROM "._GPIO_COMMAND." WHERE id > '".(isset($_POST['syncid']) ? $_POST['syncid'] : 0)."' ORDER BY id ASC");
+	$results = $stmt->fetchAll(PDO::FETCH_NUM);
+	echo json_encode($results);	
 }
 
 ?>
