@@ -1,5 +1,9 @@
 <?php
-require_once('../config.php');
+$dirname = dirname(__FILE__);
+$pos = strpos($dirname,'public_html');
+$def_path = substr($dirname,0, $pos+11);
+
+require_once($def_path."/libs/class.db.php");
 
 if( isset($_POST['v']) || isset($_GET['test']) )
 {
@@ -23,7 +27,8 @@ mode=:mode ,
 value=:value,
 updated_at=:updated_at");
 	*/
-	$stmt = $dbh->prepare("UPDATE `gpio` SET  mode=:mode ,value=:value WHERE gpio=:gpio");
+	$dbh = new DB();
+	$stmt = $dbh->db->prepare("UPDATE `"._GPIO_STATUS."` SET  mode=:mode ,value=:value WHERE gpio=:gpio");
 
 	$stmt->bindParam(':gpio', $gpio);
 	$stmt->bindParam(':mode', $mode);
@@ -44,7 +49,7 @@ updated_at=:updated_at");
 		if(  $stmt->rowCount() > 0 )
 		{
 			//Update updated_at 
-			$dbh->exec("UPDATE `gpio` SET updated_at='".date("YmdHis")."'  WHERE gpio='".$gpio."'");
+			$dbh->db->exec("UPDATE `"._GPIO_STATUS."` SET updated_at='".date("YmdHis")."'  WHERE gpio='".$gpio."'");
 		}
 		$data[$arr[2]] = $arr;		
 	}
