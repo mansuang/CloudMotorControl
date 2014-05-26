@@ -4,15 +4,25 @@ require_once("libs/class.gpio.php");
 $gpio = new GPIO();
 if( isset($_GET['s']) && $_GET['s']=='1')
 {
-	$g17 = $gpio->read(17);
-	echo $g17['value'];
+	$sync = $gpio->read(999);
+	
+	
+	$g17 = $gpio->read(27);
+	echo ( (time()-$sync['value'])<30 ? '<div class="label label-success">ONLINE @ '.$sync['updated_at'].'</div>' : '<div class="label label-default">OFFLINE @ '.$sync['updated_at'].'</div>' ).'<h1>POWER <span class="s'.$g17['value'].'">'.($g17['value']=='1' ? 'ON' : 'OFF').'</span></h1>';
 	exit;
 }
 
 if( isset($_POST['v']) )
 {
-	$gpio->mode(17, 'OUT');
-	$gpio->write(17, $_POST['v']);
+	//$gpio->mode(17, 'OUT');
+	if( $_POST['v']=='1' )
+	{
+		$gpio->cmd('on172s');
+	}
+	else
+	{
+		$gpio->cmd('on182s');
+	}
 	echo $_POST['v'];
 	exit;
 }
@@ -40,16 +50,35 @@ if( isset($_POST['v']) )
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+	<style>
+	.s1{
+		background-color:#0f0;
+		padding-left:5px;
+		padding-right:5px;
+		}
+	.s0{
+		background-color:#f00;
+		padding-left:5px;
+		padding-right:5px;		
+		}
+	.online{
+		color:#0f0;
+		}
+	.offline{
+		color:#999;
+		}
+	</style>
   </head>
   <body>
     <div class="container theme-showcase" role="main">
 
       <!-- Main jumbotron for a primary marketing message or call to action -->
       <div class="jumbotron">
-        <h1 class=" text-center">Send=<span id="startstop"></span> | Response=<span id="gpio17"></span></h1>
+        <div id="gpio17" class="text-center"></div>
         <p><a href="#" class="btn btn-danger btn-lg" role="button" id="btnStop">STOP</a> <a href="#" class="btn btn-success btn-lg pull-right" role="button" id="btnStart">START</a></p>
       </div>
 	</div>
+	Send=<span id="startstop"></span>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>

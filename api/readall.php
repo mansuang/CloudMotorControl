@@ -52,6 +52,8 @@ updated_at=:updated_at");
 		}
 		$data[$arr[2]] = $arr;		
 	}
+	//update synctime
+	$dbh->db->exec("UPDATE `"._GPIO_STATUS."` SET value='".time()."', updated_at='".date("YmdHis")."'  WHERE gpio='999'");
 	
 	$stmt = $dbh->db->query("SELECT id,gpio,field,value FROM "._GPIO_COMMAND." WHERE id > '".(isset($_POST['syncid']) ? $_POST['syncid'] : 0)."' ORDER BY id ASC");
 	$results = $stmt->fetchAll(PDO::FETCH_NUM);

@@ -33,7 +33,7 @@ class GPIO extends DB
 		if( $mode != $rs['mode'] )
 		{
 			//has change, write command
-			$this->cmd($gpio, 'mode', $mode);
+			$this->putdb($gpio, 'mode', $mode);
 			return TRUE;
 		}	
 		else
@@ -44,10 +44,15 @@ class GPIO extends DB
 		
 	public function write($gpio, $value)
 	{
-		$this->cmd($gpio, 'write', $value);
+		$this->putdb($gpio, 'write', $value);
 	}
 	
-	protected function cmd($gpio,$field,$value)
+	public function cmd($cmd)
+	{
+		$this->putdb(0, $cmd, 0);
+	}
+	
+	public function putdb($gpio,$field,$value)
 	{
 		$stmt = $this->db->prepare("INSERT INTO `"._GPIO_COMMAND."` 
 								(`id`, `gpio`, `field`, `value`, `created_at`) 
